@@ -12,7 +12,7 @@
 
 body {
   height: 100svh;
-  background: linear-gradient(135deg, #ff9ecf, #ffcce6);
+  background: linear-gradient(135deg, #3a0f1f, #7a1f3d, #b23a5f);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -21,18 +21,36 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Floating hearts */
+.heart {
+  position: fixed;
+  bottom: -10px;
+  color: rgba(255,255,255,0.8);
+  pointer-events: none;
+  animation: floatUp linear infinite;
+  z-index: 0;
+}
+
+@keyframes floatUp {
+  to {
+    transform: translateY(-120vh) scale(1.2);
+    opacity: 0;
+  }
+}
+
 /* Envelope */
 .envelope {
   width: 85vw;
-  max-width: 380px;
+  max-width: 360px;
   aspect-ratio: 16 / 10;
   position: relative;
   background: #fff0f5;
-  border-radius: 12px;
+  border-radius: 10px;
   cursor: pointer;
   transform-style: preserve-3d;
   transition: transform 0.9s cubic-bezier(.4,0,.2,1);
   box-shadow: 0 25px 50px rgba(0,0,0,0.45);
+  z-index: 2;
 }
 
 .envelope.open {
@@ -56,52 +74,58 @@ body {
 /* Letter */
 .letter {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0.96);
-  width: 92%;
-  height: 90%;
+  inset: 8px;
   background: #ffffff;
-  padding: 28px 22px;
-  border-radius: 10px;
+  padding: 25px 20px;
+  border-radius: 8px;
   opacity: 0;
+  transform: translateY(30px) scale(0.96);
   transition: all 0.8s cubic-bezier(.4,0,.2,1);
   z-index: 1;
   overflow-y: auto;
 }
 
-.letter.show {
+.envelope.open .letter {
   opacity: 1;
-  transform: translate(-50%, -75%) scale(1);
-  z-index: 3;
+  transform: translateY(0) scale(1);
 }
 
 /* Content */
 .content {
-  font-size: 1.05rem;
+  font-size: 1rem;
   line-height: 1.7;
   color: #4a2b35;
   white-space: pre-line;
 }
 
-/* Close */
+/* Close button */
 .close {
   position: absolute;
-  top: 8px;
+  bottom: 10px;
   right: 12px;
   background: rgba(0,0,0,0.05);
   border: none;
   border-radius: 50%;
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   font-size: 18px;
   cursor: pointer;
 }
 
-/* Mobile text sizing */
+/* Hint */
+.hint {
+  position: absolute;
+  bottom: -40px;
+  width: 100%;
+  text-align: center;
+  color: rgba(255,255,255,0.85);
+  font-size: 0.85rem;
+}
+
+/* Mobile tweak */
 @media (max-width: 480px) {
   .content {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
   }
 }
 </style>
@@ -116,16 +140,16 @@ body {
 <div class="envelope" id="envelope">
   <div class="flap"></div>
 
-  <div class="letter" id="letter">
+  <div class="letter" onclick="event.stopPropagation()">
     <button class="close" onclick="closeLetter(event)">×</button>
     <div class="content" id="text"></div>
   </div>
+
+  <div class="hint">Tap gently ❤️</div>
 </div>
 
 <script>
-
 const envelope = document.getElementById('envelope');
-const letter = document.getElementById('letter');
 const music = document.getElementById('bgMusic');
 const textDiv = document.getElementById('text');
 
@@ -139,15 +163,9 @@ I don’t think there’s ever a perfect way to start something like this, espec
 
 It’s funny how distance works. We’re miles apart, yet you feel closer to me than most people who stand right next to me every day. Somehow, you’ve made your place in my heart so naturally that it doesn’t even feel like a choice anymore — it just feels right.
 
-There are moments when I catch myself smiling at my phone like an idiot, and it’s almost always because of you. The way you talk, the little things you say, even your random moods — I adore all of it more than you probably realize.
+There are moments when I catch myself smiling at my phone because of you. The way you talk, the little things you say, even your random moods — I adore all of it.
 
-I think what makes you so special isn’t just how you look or how you laugh. It’s the way you care. The way you think. The way you try. You have this quiet strength and softness at the same time, and it’s honestly one of the most beautiful combinations I’ve ever seen in a person.
-
-Some nights I imagine what it would feel like to just sit next to you — no phones, no distance — just us existing in the same space. I imagine holding your hand, hearing your voice without a speaker between us, seeing your expressions in real time.
-
-You’ve become such an important part of my life without even trying to. You matter more than you know.
-
-What I feel for you isn’t temporary. It isn’t something casual. It’s calm. It’s deep. It’s steady.
+You matter to me in a way that isn’t temporary. It’s calm. It’s deep. It’s steady.
 
 You’re not just someone I like.
 You’re someone I genuinely care about.
@@ -158,16 +176,12 @@ And I’ll never get tired of reminding you how much you mean to me. ❤️`;
 envelope.addEventListener('click', () => {
   if (!envelope.classList.contains('open')) {
     envelope.classList.add('open');
-    letter.classList.add('show');
-  }
-});
-
-letter.addEventListener('click', () => {
-  if (!typingStarted) {
-    typingStarted = true;
     music.volume = 0.4;
     music.play().catch(() => {});
-    typeWriter();
+    if (!typingStarted) {
+      typingStarted = true;
+      typeWriter();
+    }
   }
 });
 
@@ -184,7 +198,6 @@ function typeWriter() {
 
 function closeLetter(e) {
   e.stopPropagation();
-  letter.classList.remove('show');
   envelope.classList.remove('open');
   music.pause();
   music.currentTime = 0;
@@ -195,6 +208,17 @@ function closeLetter(e) {
   index = 0;
 }
 
+/* Floating hearts */
+for (let i = 0; i < 30; i++) {
+  const heart = document.createElement("div");
+  heart.className = "heart";
+  heart.innerHTML = "❤";
+  heart.style.left = Math.random() * 100 + "vw";
+  heart.style.animationDuration = (6 + Math.random() * 6) + "s";
+  heart.style.opacity = Math.random();
+  heart.style.fontSize = (12 + Math.random() * 14) + "px";
+  document.body.appendChild(heart);
+}
 </script>
 
 </body>
