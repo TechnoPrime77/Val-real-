@@ -1,45 +1,56 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <title>For Ria ❤️</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
 body {
-  margin: 0;
-  padding: 0;
-  height: 100vh;
+  height: 100svh;
+  background: linear-gradient(135deg, #ff9ecf, #ffcce6);
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #ff9ecf, #ffcce6);
-  font-family: 'Dancing Script', cursive;
+  font-family: 'Playfair Display', serif;
   overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Envelope */
 .envelope {
+  width: 85vw;
+  max-width: 380px;
+  aspect-ratio: 16 / 10;
   position: relative;
-  width: 90vw;
-  max-width: 400px;
-  height: 250px;
-  background: #ff4d88;
-  border-radius: 6px;
+  background: #fff0f5;
+  border-radius: 12px;
   cursor: pointer;
-  transition: transform 0.6s ease;
+  transform-style: preserve-3d;
+  transition: transform 0.9s cubic-bezier(.4,0,.2,1);
+  box-shadow: 0 25px 50px rgba(0,0,0,0.45);
 }
 
-.envelope::before {
-  content: '';
+.envelope.open {
+  transform: scale(1.05);
+}
+
+.flap {
   position: absolute;
-  width: 100%;
-  height: 100%;
-  background: #ff3377;
-  clip-path: polygon(0 0, 50% 60%, 100% 0);
-  top: 0;
-  left: 0;
+  inset: 0;
+  background: #ffd6e3;
+  clip-path: polygon(0 0, 100% 0, 50% 55%);
+  transform-origin: top;
+  transition: transform 0.8s cubic-bezier(.4,0,.2,1);
+  z-index: 2;
+}
+
+.envelope.open .flap {
+  transform: rotateX(-160deg);
 }
 
 /* Letter */
@@ -47,46 +58,50 @@ body {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 95%;
-  height: 120%;
-  background: #f5e6cc;
-  padding: 30px 25px;
+  transform: translate(-50%, -50%) scale(0.96);
+  width: 92%;
+  height: 90%;
+  background: #ffffff;
+  padding: 28px 22px;
   border-radius: 10px;
   opacity: 0;
-  transform: translate(-50%, -50%) translateY(40px) scale(0.95);
   transition: all 0.8s cubic-bezier(.4,0,.2,1);
-  z-index: 3;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+  z-index: 1;
   overflow-y: auto;
 }
 
 .letter.show {
   opacity: 1;
-  transform: translate(-50%, -100%) scale(1.05);
+  transform: translate(-50%, -75%) scale(1);
+  z-index: 3;
 }
 
 /* Content */
 .content {
-  font-size: 22px;
-  line-height: 1.8;
-  color: #5a3e36;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #4a2b35;
   white-space: pre-line;
 }
 
-/* Close Button */
-.close-btn {
+/* Close */
+.close {
   position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 20px;
+  top: 8px;
+  right: 12px;
+  background: rgba(0,0,0,0.05);
+  border: none;
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  font-size: 18px;
   cursor: pointer;
-  color: #5a3e36;
 }
 
-/* Mobile adjustments */
+/* Mobile text sizing */
 @media (max-width: 480px) {
   .content {
-    font-size: 24px;
+    font-size: 1.1rem;
   }
 }
 </style>
@@ -94,16 +109,29 @@ body {
 
 <body>
 
-<div class="envelope" onclick="openLetter()">
+<audio id="bgMusic" preload="auto">
+  <source src="love-music.mp3" type="audio/mpeg">
+</audio>
+
+<div class="envelope" id="envelope">
+  <div class="flap"></div>
+
   <div class="letter" id="letter">
-    <div class="close-btn" onclick="closeLetter(event)">✖</div>
+    <button class="close" onclick="closeLetter(event)">×</button>
     <div class="content" id="text"></div>
   </div>
 </div>
 
-<audio id="music" src="love-music.mp3"></audio>
-
 <script>
+
+const envelope = document.getElementById('envelope');
+const letter = document.getElementById('letter');
+const music = document.getElementById('bgMusic');
+const textDiv = document.getElementById('text');
+
+let typingStarted = false;
+let index = 0;
+let typingInterval;
 
 const message = `Heyy Ria,
 
@@ -115,59 +143,56 @@ There are moments when I catch myself smiling at my phone like an idiot, and it�
 
 I think what makes you so special isn’t just how you look or how you laugh. It’s the way you care. The way you think. The way you try. You have this quiet strength and softness at the same time, and it’s honestly one of the most beautiful combinations I’ve ever seen in a person.
 
-Some nights I imagine what it would feel like to just sit next to you — no phones, no distance — just us existing in the same space. I imagine holding your hand, hearing your voice without a speaker between us, seeing your expressions in real time. And I promise you, that thought alone keeps me going on the harder days.
+Some nights I imagine what it would feel like to just sit next to you — no phones, no distance — just us existing in the same space. I imagine holding your hand, hearing your voice without a speaker between us, seeing your expressions in real time.
 
-You’ve become such an important part of my life without even trying to. You don’t force anything. You don’t demand anything. Yet somehow, you matter more than you know.
+You’ve become such an important part of my life without even trying to. You matter more than you know.
 
-I admire your heart. I admire your mind. I admire the way you handle things, even when they’re difficult. You inspire me more than you think.
-
-And even though I might not always say everything perfectly, or at the right time, please know this: what I feel for you isn’t temporary. It isn’t something casual or passing. It’s calm. It’s deep. It’s steady.
+What I feel for you isn’t temporary. It isn’t something casual. It’s calm. It’s deep. It’s steady.
 
 You’re not just someone I like.
 You’re someone I genuinely care about.
 Someone I want in my future.
-Someone I’m thankful for every single day.
 
-So yeah… maybe this is “this again.”
+And I’ll never get tired of reminding you how much you mean to me. ❤️`;
 
-But when it comes to you, I don’t think I’ll ever get tired of reminding you how much you mean to me. ❤️`;
+envelope.addEventListener('click', () => {
+  if (!envelope.classList.contains('open')) {
+    envelope.classList.add('open');
+    letter.classList.add('show');
+  }
+});
 
-let index = 0;
-let typingInterval;
-
-function openLetter() {
-  const letter = document.getElementById("letter");
-  const music = document.getElementById("music");
-
-  letter.classList.add("show");
-  music.play();
-
-  typeWriter();
-}
-
-function closeLetter(event) {
-  event.stopPropagation();
-  const letter = document.getElementById("letter");
-  const music = document.getElementById("music");
-
-  letter.classList.remove("show");
-  music.pause();
-  music.currentTime = 0;
-
-  clearInterval(typingInterval);
-  document.getElementById("text").innerHTML = "";
-  index = 0;
-}
+letter.addEventListener('click', () => {
+  if (!typingStarted) {
+    typingStarted = true;
+    music.volume = 0.4;
+    music.play().catch(() => {});
+    typeWriter();
+  }
+});
 
 function typeWriter() {
   typingInterval = setInterval(() => {
     if (index < message.length) {
-      document.getElementById("text").innerHTML += message.charAt(index);
+      textDiv.textContent += message.charAt(index);
       index++;
     } else {
       clearInterval(typingInterval);
     }
   }, 35);
+}
+
+function closeLetter(e) {
+  e.stopPropagation();
+  letter.classList.remove('show');
+  envelope.classList.remove('open');
+  music.pause();
+  music.currentTime = 0;
+
+  clearInterval(typingInterval);
+  textDiv.textContent = "";
+  typingStarted = false;
+  index = 0;
 }
 
 </script>
