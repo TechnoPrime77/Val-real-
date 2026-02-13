@@ -90,12 +90,35 @@ body {
   transform: translateY(0) scale(1);
 }
 
+/* Popped out state */
+.letter.popout {
+  transform: translateY(-40px) scale(1.05);
+  z-index: 5;
+}
+
 /* Content */
 .content {
   font-size: 1rem;
   line-height: 1.7;
   color: #4a2b35;
   white-space: pre-line;
+}
+
+/* Go Back button */
+.go-back {
+  display: none;
+  margin-top: 20px;
+  text-align: center;
+}
+
+.go-back a {
+  background: #ffd6e3;
+  color: #b23a5f;
+  padding: 8px 14px;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 1rem;
 }
 
 /* Close button */
@@ -121,13 +144,6 @@ body {
   color: rgba(255,255,255,0.85);
   font-size: 0.85rem;
 }
-
-/* Mobile tweak */
-@media (max-width: 480px) {
-  .content {
-    font-size: 1.05rem;
-  }
-}
 </style>
 </head>
 
@@ -140,39 +156,52 @@ body {
 <div class="envelope" id="envelope">
   <div class="flap"></div>
 
-  <div class="letter" onclick="event.stopPropagation()">
+  <div class="letter" id="letter">
     <button class="close" onclick="closeLetter(event)">×</button>
     <div class="content" id="text"></div>
+
+    <div class="go-back" id="goBackBtn">
+      <a href="#" id="backLink" target="_blank">Go Back</a>
+    </div>
   </div>
 
-  <div class="hint">Tap gently ❤️</div>
+  <div class="hint">Tap the letter ❤️</div>
 </div>
 
 <script>
 const envelope = document.getElementById('envelope');
+const letter = document.getElementById('letter');
 const music = document.getElementById('bgMusic');
 const textDiv = document.getElementById('text');
+const goBackBtn = document.getElementById('goBackBtn');
+const backLink = document.getElementById('backLink');
 
 let typingStarted = false;
 let index = 0;
 let typingInterval;
 
+/* 🔗 SET YOUR LINK HERE */
+backLink.href = "https://chess.com";
+
 const message = `Heyy Ria,
 
-I don’t think there’s ever a perfect way to start something like this, especially when it’s about you. Every time I try to put my feelings into words, they somehow feel smaller than what I actually feel inside.
+Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. 
+It has survived not only five centuries, but also the leap into 
 
-It’s funny how distance works. We’re miles apart, yet you feel closer to me than most people who stand right next to me every day. Somehow, you’ve made your place in my heart so naturally that it doesn’t even feel like a choice anymore — it just feels right.
+electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus 
 
-There are moments when I catch myself smiling at my phone because of you. The way you talk, the little things you say, even your random moods — I adore all of it.
+PageMaker including versions of Lorem Ipsum.I don’t think there’s ever a perfect way to start something like this...
 
-You matter to me in a way that isn’t temporary. It’s calm. It’s deep. It’s steady.
 
-You’re not just someone I like.
+You matter to me in a way that isn’t temporary.
+It’s calm. It’s deep. It’s steady. I LOVE YOU A LOT
+
 You’re someone I genuinely care about.
 Someone I want in my future.
 
 And I’ll never get tired of reminding you how much you mean to me. ❤️`;
 
+/* Open envelope */
 envelope.addEventListener('click', () => {
   if (!envelope.classList.contains('open')) {
     envelope.classList.add('open');
@@ -185,6 +214,13 @@ envelope.addEventListener('click', () => {
   }
 });
 
+/* Toggle pop out */
+letter.addEventListener('click', (e) => {
+  e.stopPropagation();
+  letter.classList.toggle('popout');
+});
+
+/* Typing */
 function typeWriter() {
   typingInterval = setInterval(() => {
     if (index < message.length) {
@@ -192,18 +228,22 @@ function typeWriter() {
       index++;
     } else {
       clearInterval(typingInterval);
+      goBackBtn.style.display = "block";
     }
   }, 35);
 }
 
+/* Close */
 function closeLetter(e) {
   e.stopPropagation();
   envelope.classList.remove('open');
+  letter.classList.remove('popout');
   music.pause();
   music.currentTime = 0;
 
   clearInterval(typingInterval);
   textDiv.textContent = "";
+  goBackBtn.style.display = "none";
   typingStarted = false;
   index = 0;
 }
