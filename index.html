@@ -90,13 +90,13 @@ body {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%) scale(0.96);
   width: 90%;
   height: 85%;
   background: #ffffff;
   padding: 25px 20px;
   border-radius: 8px;
   opacity: 0;
+  transform: translate(-50%, -50%) translateY(30px) scale(0.96);
   transition: all 0.8s cubic-bezier(.4,0,.2,1);
   z-index: 1;
   cursor: pointer;
@@ -104,7 +104,7 @@ body {
 
 .letter.show {
   opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
+  transform: translate(-50%, -150%) scale(1); /* slides out above envelope */
 }
 
 h1 {
@@ -115,7 +115,7 @@ h1 {
 /* Typing */
 #typingLine {
   font-size: 1rem;
-  min-height: 30px;
+  min-height: 120px;
   white-space: pre-line; /* preserve line breaks */
 }
 
@@ -172,7 +172,6 @@ h1 {
       <a href="#" target="_blank" id="backLink">Go Back</a>
     </div>
   </div>
-
 </div>
 
 <script>
@@ -185,9 +184,12 @@ const goBackBtn = document.getElementById('goBackBtn');
 const backLink = document.getElementById('backLink');
 
 let typingStarted = false;
-const firstMessage = `Heyy Ria
-prbly ur like not this againn...i didnt get much time to do it so ur stuck with this ig`;
-const secondMessage = "Just kiddingg... Click here";
+
+const loveMessage = `Every day with you feels like a dream I never want to wake from.
+Your smile brightens the darkest moments,
+and your presence makes everything better.
+I love you more than words could ever express.`;
+
 let index = 0;
 
 // Envelope opens -> paper slides out
@@ -205,49 +207,24 @@ letter.addEventListener('click', () => {
     music.volume = 0.4;
     music.play().catch(() => {});
     musicBtn.textContent = '⏸ Music';
-    typeFirst();
+    typeLetter();
   }
 });
 
-// Typing first message
-function typeFirst() {
-  if (index < firstMessage.length) {
-    typingLine.textContent += firstMessage.charAt(index);
+// Typing the love letter
+function typeLetter() {
+  if (index < loveMessage.length) {
+    typingLine.textContent += loveMessage.charAt(index);
     index++;
-    setTimeout(typeFirst, 70);
+    setTimeout(typeLetter, 60);
   } else {
-    setTimeout(deleteText, 2000);
+    showGoBack();
   }
-}
-
-// Backspace first message
-function deleteText() {
-  if (typingLine.textContent.length > 0) {
-    typingLine.textContent = typingLine.textContent.slice(0, -1);
-    setTimeout(deleteText, 40);
-  } else {
-    setTimeout(typeSecond, 500);
-  }
-}
-
-// Typing second message
-function typeSecond() {
-  let i = 0;
-  function typing() {
-    if (i < secondMessage.length) {
-      typingLine.textContent += secondMessage.charAt(i);
-      i++;
-      setTimeout(typing, 70);
-    } else {
-      showGoBack();
-    }
-  }
-  typing();
 }
 
 // Show go back button
 function showGoBack() {
-  backLink.href = "http://chess.com/"; // <-- set your link here
+  backLink.href = "http://chess.com/"; // <-- change link here
   goBackBtn.style.display = "block";
 }
 
@@ -260,7 +237,6 @@ function closeLetter(e) {
   music.currentTime = 0;
   musicBtn.textContent = '▶ Music';
 
-  // Reset typing
   typingLine.textContent = "";
   goBackBtn.style.display = "none";
   typingStarted = false;
