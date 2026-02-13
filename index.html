@@ -1,270 +1,175 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>For My Valentine</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For Ria ❤️</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;600&display=swap" rel="stylesheet">
 
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
 body {
-  height: 100svh;
-  background: linear-gradient(135deg, #3a0f1f, #7a1f3d, #b23a5f);
+  margin: 0;
+  padding: 0;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: 'Playfair Display', serif;
+  background: linear-gradient(135deg, #ff9ecf, #ffcce6);
+  font-family: 'Dancing Script', cursive;
   overflow: hidden;
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* Floating hearts */
-.heart {
-  position: fixed;
-  bottom: -10px;
-  color: rgba(255,255,255,0.8);
-  pointer-events: none;
-  animation: floatUp linear infinite;
-  z-index: 0;
-}
-
-@keyframes floatUp {
-  to {
-    transform: translateY(-120vh) scale(1.2);
-    opacity: 0;
-  }
-}
-
-/* Music button */
-.music-btn {
-  position: fixed;
-  top: 16px;
-  right: 16px;
-  background: rgba(255,255,255,0.25);
-  border: none;
-  color: white;
-  padding: 8px 14px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  z-index: 5;
 }
 
 /* Envelope */
 .envelope {
-  width: 85vw;
-  max-width: 360px;
-  aspect-ratio: 16 / 10;
   position: relative;
-  background: #fff0f5;
-  border-radius: 10px;
+  width: 90vw;
+  max-width: 400px;
+  height: 250px;
+  background: #ff4d88;
+  border-radius: 6px;
   cursor: pointer;
-  transform-style: preserve-3d;
-  transition: transform 0.9s cubic-bezier(.4,0,.2,1);
-  box-shadow: 0 25px 50px rgba(0,0,0,0.45);
-  z-index: 2;
+  transition: transform 0.6s ease;
 }
 
-.envelope.open {
-  transform: scale(1.05);
-}
-
-.flap {
+.envelope::before {
+  content: '';
   position: absolute;
-  inset: 0;
-  background: #ffd6e3;
-  clip-path: polygon(0 0, 100% 0, 50% 55%);
-  transform-origin: top;
-  transition: transform 0.8s cubic-bezier(.4,0,.2,1);
-  z-index: 2;
+  width: 100%;
+  height: 100%;
+  background: #ff3377;
+  clip-path: polygon(0 0, 50% 60%, 100% 0);
+  top: 0;
+  left: 0;
 }
 
-.envelope.open .flap {
-  transform: rotateX(-160deg);
-}
-
-/* Paper inside envelope */
+/* Letter */
 .letter {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 90%;
-  height: 85%;
-  background: #ffffff;
-  padding: 25px 20px;
-  border-radius: 8px;
+  width: 95%;
+  height: 120%;
+  background: #f5e6cc;
+  padding: 30px 25px;
+  border-radius: 10px;
   opacity: 0;
-  transform: translate(-50%, -50%) translateY(30px) scale(0.96);
+  transform: translate(-50%, -50%) translateY(40px) scale(0.95);
   transition: all 0.8s cubic-bezier(.4,0,.2,1);
-  z-index: 1;
-  cursor: pointer;
+  z-index: 3;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+  overflow-y: auto;
 }
 
 .letter.show {
   opacity: 1;
-  transform: translate(-50%, -150%) scale(1); /* slides out above envelope */
+  transform: translate(-50%, -100%) scale(1.05);
 }
 
-h1 {
-  font-size: 1.2rem;
-  margin-bottom: 15px;
+/* Content */
+.content {
+  font-size: 22px;
+  line-height: 1.8;
+  color: #5a3e36;
+  white-space: pre-line;
 }
 
-/* Typing */
-#typingLine {
-  font-size: 1rem;
-  min-height: 120px;
-  white-space: pre-line; /* preserve line breaks */
-}
-
-/* Go back button */
-#goBackBtn {
-  display: none;
-  margin-top: 20px;
-  text-align: center;
-}
-
-#goBackBtn a {
-  background: #ffd6e3;
-  color: #b23a5f;
-  padding: 8px 14px;
-  text-decoration: none;
-  border-radius: 6px;
-  font-weight: 600;
-  font-size: 1rem;
-}
-
-/* Close button */
-.close {
+/* Close Button */
+.close-btn {
   position: absolute;
-  top: 8px;
-  right: 12px;
-  background: rgba(0,0,0,0.05);
-  border: none;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  font-size: 18px;
+  top: 10px;
+  right: 15px;
+  font-size: 20px;
+  cursor: pointer;
+  color: #5a3e36;
+}
+
+/* Mobile adjustments */
+@media (max-width: 480px) {
+  .content {
+    font-size: 24px;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<audio id="bgMusic" loop preload="auto">
-  <source src="love-music.mp3" type="audio/mpeg">
-</audio>
-
-<button class="music-btn" id="musicBtn" onclick="toggleMusic()">▶ Music</button>
-
-<div class="envelope" id="envelope">
-  <div class="flap"></div>
-
+<div class="envelope" onclick="openLetter()">
   <div class="letter" id="letter">
-    <button class="close" onclick="closeLetter(event)">×</button>
-
-    <h1>My love,</h1>
-    <div id="typingLine"></div>
-
-    <div id="goBackBtn">
-      <a href="#" target="_blank" id="backLink">Go Back</a>
-    </div>
+    <div class="close-btn" onclick="closeLetter(event)">✖</div>
+    <div class="content" id="text"></div>
   </div>
 </div>
 
+<audio id="music" src="love-music.mp3"></audio>
+
 <script>
-const envelope = document.getElementById('envelope');
-const letter = document.getElementById('letter');
-const music = document.getElementById('bgMusic');
-const musicBtn = document.getElementById('musicBtn');
-const typingLine = document.getElementById('typingLine');
-const goBackBtn = document.getElementById('goBackBtn');
-const backLink = document.getElementById('backLink');
 
-let typingStarted = false;
+const message = `Heyy Ria,
 
-const loveMessage = `Every day with you feels like a dream I never want to wake from.
-Your smile brightens the darkest moments,
-and your presence makes everything better.
-I love you more than words could ever express.`;
+I don’t think there’s ever a perfect way to start something like this, especially when it’s about you. Every time I try to put my feelings into words, they somehow feel smaller than what I actually feel inside.
+
+It’s funny how distance works. We’re miles apart, yet you feel closer to me than most people who stand right next to me every day. Somehow, you’ve made your place in my heart so naturally that it doesn’t even feel like a choice anymore — it just feels right.
+
+There are moments when I catch myself smiling at my phone like an idiot, and it’s almost always because of you. The way you talk, the little things you say, even your random moods — I adore all of it more than you probably realize.
+
+I think what makes you so special isn’t just how you look or how you laugh. It’s the way you care. The way you think. The way you try. You have this quiet strength and softness at the same time, and it’s honestly one of the most beautiful combinations I’ve ever seen in a person.
+
+Some nights I imagine what it would feel like to just sit next to you — no phones, no distance — just us existing in the same space. I imagine holding your hand, hearing your voice without a speaker between us, seeing your expressions in real time. And I promise you, that thought alone keeps me going on the harder days.
+
+You’ve become such an important part of my life without even trying to. You don’t force anything. You don’t demand anything. Yet somehow, you matter more than you know.
+
+I admire your heart. I admire your mind. I admire the way you handle things, even when they’re difficult. You inspire me more than you think.
+
+And even though I might not always say everything perfectly, or at the right time, please know this: what I feel for you isn’t temporary. It isn’t something casual or passing. It’s calm. It’s deep. It’s steady.
+
+You’re not just someone I like.
+You’re someone I genuinely care about.
+Someone I want in my future.
+Someone I’m thankful for every single day.
+
+So yeah… maybe this is “this again.”
+
+But when it comes to you, I don’t think I’ll ever get tired of reminding you how much you mean to me. ❤️`;
 
 let index = 0;
+let typingInterval;
 
-// Envelope opens -> paper slides out
-envelope.addEventListener('click', () => {
-  if (!envelope.classList.contains('open')) {
-    envelope.classList.add('open');
-    letter.classList.add('show');
-  }
-});
+function openLetter() {
+  const letter = document.getElementById("letter");
+  const music = document.getElementById("music");
 
-// Paper click -> starts typing & music
-letter.addEventListener('click', () => {
-  if (!typingStarted) {
-    typingStarted = true;
-    music.volume = 0.4;
-    music.play().catch(() => {});
-    musicBtn.textContent = '⏸ Music';
-    typeLetter();
-  }
-});
+  letter.classList.add("show");
+  music.play();
 
-// Typing the love letter
-function typeLetter() {
-  if (index < loveMessage.length) {
-    typingLine.textContent += loveMessage.charAt(index);
-    index++;
-    setTimeout(typeLetter, 60);
-  } else {
-    showGoBack();
-  }
+  typeWriter();
 }
 
-// Show go back button
-function showGoBack() {
-  backLink.href = "http://chess.com/"; // <-- change link here
-  goBackBtn.style.display = "block";
-}
+function closeLetter(event) {
+  event.stopPropagation();
+  const letter = document.getElementById("letter");
+  const music = document.getElementById("music");
 
-// Close letter
-function closeLetter(e) {
-  e.stopPropagation();
-  letter.classList.remove('show');
-  envelope.classList.remove('open');
+  letter.classList.remove("show");
   music.pause();
   music.currentTime = 0;
-  musicBtn.textContent = '▶ Music';
 
-  typingLine.textContent = "";
-  goBackBtn.style.display = "none";
-  typingStarted = false;
+  clearInterval(typingInterval);
+  document.getElementById("text").innerHTML = "";
   index = 0;
 }
 
-// Manual music toggle
-function toggleMusic() {
-  if (music.paused) {
-    music.play();
-    musicBtn.textContent = '⏸ Music';
-  } else {
-    music.pause();
-    musicBtn.textContent = '▶ Music';
-  }
+function typeWriter() {
+  typingInterval = setInterval(() => {
+    if (index < message.length) {
+      document.getElementById("text").innerHTML += message.charAt(index);
+      index++;
+    } else {
+      clearInterval(typingInterval);
+    }
+  }, 35);
 }
 
-// Floating hearts
-for (let i = 0; i < 30; i++) {
-  const heart = document.createElement("div");
-  heart.className = "heart";
-  heart.innerHTML = "❤";
-  heart.style.left = Math.random() * 100 + "vw";
-  heart.style.animationDuration = (6 + Math.random() * 6) + "s";
-  heart.style.opacity = Math.random();
-  heart.style.fontSize = (12 + Math.random() * 14) + "px";
-  document.body.appendChild(heart);
-}
 </script>
 
 </body>
