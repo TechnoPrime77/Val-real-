@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>For My Valentine</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  height: 100svh;
+  background: linear-gradient(135deg, #3a0f1f, #7a1f3d, #b23a5f);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Playfair Display', serif;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Floating hearts */
+.heart {
+  position: fixed;
+  bottom: -10px;
+  color: rgba(255,255,255,0.8);
+  pointer-events: none;
+  animation: floatUp linear infinite;
+  z-index: 0;
+}
+
+@keyframes floatUp {
+  to {
+    transform: translateY(-120vh) scale(1.2);
+    opacity: 0;
+  }
+}
+
+/* Music button */
+.music-btn {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  background: rgba(255,255,255,0.25);
+  border: none;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  z-index: 5;
+}
+
+/* Envelope */
+.envelope {
+  width: 85vw;
+  max-width: 360px;
+  aspect-ratio: 16 / 10;
+  position: relative;
+  background: #fff0f5;
+  border-radius: 10px;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  transition: transform 0.9s cubic-bezier(.4,0,.2,1);
+  box-shadow: 0 25px 50px rgba(0,0,0,0.45);
+  z-index: 2;
+}
+
+.envelope.open {
+  transform: scale(1.05);
+}
+
+.flap {
+  position: absolute;
+  inset: 0;
+  background: #ffd6e3;
+  clip-path: polygon(0 0, 100% 0, 50% 55%);
+  transform-origin: top;
+  transition: transform 0.8s cubic-bezier(.4,0,.2,1);
+  z-index: 2;
+}
+
+.envelope.open .flap {
+  transform: rotateX(-160deg);
+}
+
+/* Paper inside envelope */
+.letter {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.96);
+  width: 90%;
+  height: 85%;
+  background: #ffffff;
+  padding: 25px 20px;
+  border-radius: 8px;
+  opacity: 0;
+  transition: all 0.8s cubic-bezier(.4,0,.2,1);
+  z-index: 1;
+  cursor: pointer;
+}
+
+.letter.show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+h1 {
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+}
+
+/* Typing */
+#typingLine {
+  font-size: 1rem;
+  min-height: 30px;
+  white-space: pre-line; /* preserve line breaks */
+}
+
+/* Go back button */
+#goBackBtn {
+  display: none;
+  margin-top: 20px;
+  text-align: center;
+}
+
+#goBackBtn a {
+  background: #ffd6e3;
+  color: #b23a5f;
+  padding: 8px 14px;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+/* Close button */
+.close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  background: rgba(0,0,0,0.05);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 18px;
+}
+</style>
+</head>
+
+<body>
+
+<audio id="bgMusic" loop preload="auto">
+  <source src="love-music.mp3" type="audio/mpeg">
+</audio>
+
+<button class="music-btn" id="musicBtn" onclick="toggleMusic()">▶ Music</button>
+
+<div class="envelope" id="envelope">
+  <div class="flap"></div>
+
+  <div class="letter" id="letter">
+    <button class="close" onclick="closeLetter(event)">×</button>
+
+    <h1>My love,</h1>
+    <div id="typingLine"></div>
+
+    <div id="goBackBtn">
+      <a href="#" target="_blank" id="backLink">Go Back</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const envelope = document.getElementById('envelope');
+const letter = document.getElementById('letter');
+const music = document.getElementById('bgMusic');
+const musicBtn = document.getElementById('musicBtn');
+const typingLine = document.getElementById('typingLine');
+const goBackBtn = document.getElementById('goBackBtn');
+const backLink = document.getElementById('backLink');
+
+let typingStarted = false;
+const firstMessage = `Heyy Ria
+prbly ur like not this againn...i didnt get much time to do it so ur stuck with this ig`;
+const secondMessage = "Just kiddingg... Click here";
+let index = 0;
+
+// Envelope opens -> paper slides out
+envelope.addEventListener('click', () => {
+  if (!envelope.classList.contains('open')) {
+    envelope.classList.add('open');
+    letter.classList.add('show');
+  }
+});
+
+// Paper click -> starts typing & music
+letter.addEventListener('click', () => {
+  if (!typingStarted) {
+    typingStarted = true;
+    music.volume = 0.4;
+    music.play().catch(() => {});
+    musicBtn.textContent = '⏸ Music';
+    typeFirst();
+  }
+});
+
+// Typing first message
+function typeFirst() {
+  if (index < firstMessage.length) {
+    typingLine.textContent += firstMessage.charAt(index);
+    index++;
+    setTimeout(typeFirst, 70);
+  } else {
+    setTimeout(deleteText, 2000);
+  }
+}
+
+// Backspace first message
+function deleteText() {
+  if (typingLine.textContent.length > 0) {
+    typingLine.textContent = typingLine.textContent.slice(0, -1);
+    setTimeout(deleteText, 40);
+  } else {
+    setTimeout(typeSecond, 500);
+  }
+}
+
+// Typing second message
+function typeSecond() {
+  let i = 0;
+  function typing() {
+    if (i < secondMessage.length) {
+      typingLine.textContent += secondMessage.charAt(i);
+      i++;
+      setTimeout(typing, 70);
+    } else {
+      showGoBack();
+    }
+  }
+  typing();
+}
+
+// Show go back button
+function showGoBack() {
+  backLink.href = "http://chess.com/"; // <-- set your link here
+  goBackBtn.style.display = "block";
+}
+
+// Close letter
+function closeLetter(e) {
+  e.stopPropagation();
+  letter.classList.remove('show');
+  envelope.classList.remove('open');
+  music.pause();
+  music.currentTime = 0;
+  musicBtn.textContent = '▶ Music';
+
+  // Reset typing
+  typingLine.textContent = "";
+  goBackBtn.style.display = "none";
+  typingStarted = false;
+  index = 0;
+}
+
+// Manual music toggle
+function toggleMusic() {
+  if (music.paused) {
+    music.play();
+    musicBtn.textContent = '⏸ Music';
+  } else {
+    music.pause();
+    musicBtn.textContent = '▶ Music';
+  }
+}
+
+// Floating hearts
+for (let i = 0; i < 30; i++) {
+  const heart = document.createElement("div");
+  heart.className = "heart";
+  heart.innerHTML = "❤";
+  heart.style.left = Math.random() * 100 + "vw";
+  heart.style.animationDuration = (6 + Math.random() * 6) + "s";
+  heart.style.opacity = Math.random();
+  heart.style.fontSize = (12 + Math.random() * 14) + "px";
+  document.body.appendChild(heart);
+}
+</script>
+
+</body>
+</html>
