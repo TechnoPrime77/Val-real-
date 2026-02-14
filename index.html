@@ -183,23 +183,24 @@ let typingInterval;
 /* 🔗 SET YOUR LINK HERE */
 backLink.href = "http://iloveyouria.carrd.co/#five";
 
-const message = `Heyy Ria,
+const message = `Hey Ria,
 
-Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. 
-It has survived not only five centuries, but also the leap into 
+Sometimes I think about all the little moments we’ve shared, and I realize how much brighter my life feels with you in it. Even the tiniest things about you—your laugh, your smile,
+the way you tease me—stay with me all day.
 
-electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus 
+Do you remember the day you made me act gay just so I could hear you say “I love you”? 💀
+I didn’t even know I could talk like that, but I had so much fun, and I still get reminded of that day whenever you send me those reels.
+Moments like that—silly and unexpected are the ones I treasure the most.
 
-PageMaker including versions of Lorem Ipsum.I don’t think there’s ever a perfect way to start something like this...
+Ria, I love your laugh, your smile, and even how you’ve asked me why I call when I have nothing to say. 
+The truth? I don’t need a reason. I just love hearing your voice, feeling close to you even when we’re apart, and I miss every little thing about you. 
+ 
+In the end, you’re not just my partner… you’re my home, my rest, my heart, my favorite moment of every day, and the place I always want to be.
 
+All I want is you. No matter who comes or goes, no matter what anyone says, I’ll never stop loving or caring for you.
 
-You matter to me in a way that isn’t temporary.
-It’s calm. It’s deep. It’s steady. I LOVE YOU A LOT
+I love you a lot`;
 
-You’re someone I genuinely care about.
-Someone I want in my future.
-
-And I’ll never get tired of reminding you how much you mean to me. ❤️`;
 
 /* Open envelope */
 envelope.addEventListener('click', () => {
@@ -228,10 +229,23 @@ function typeWriter() {
       index++;
     } else {
       clearInterval(typingInterval);
+
+      // Add signature + neon heart AFTER typing finishes
+      textDiv.innerHTML += `
+        <br><br>
+        <div style="text-align:right; font-weight:600;">Aaron</div>
+        <br>
+        <div style="text-align:center; font-size:28px; color:#ff4da6;
+                    text-shadow: 0 0 8px #ff4da6, 0 0 16px #ff66cc;">
+          ♥
+        </div>
+      `;
+
       goBackBtn.style.display = "block";
     }
   }, 35);
 }
+
 
 /* Close */
 function closeLetter(e) {
