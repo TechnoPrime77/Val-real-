@@ -230,13 +230,16 @@ function typeWriter() {
     } else {
       clearInterval(typingInterval);
 
-      // Add signature + neon heart AFTER typing finishes
+      // Remove trailing spaces/newlines
+      textDiv.innerHTML = textDiv.innerHTML.trim();
+
+      // Add signature neatly
       textDiv.innerHTML += `
-        <br><br>
-        <div style="text-align:right; font-weight:600;">Aaron</div>
-        <br>
-        <div style="text-align:center; font-size:28px; color:#ff4da6;
-                    text-shadow: 0 0 8px #ff4da6, 0 0 16px #ff66cc;">
+        <div style="margin-top:20px; text-align:right; font-weight:600;">
+          Aaron
+        </div>
+        <div style="margin-top:10px; text-align:center; font-size:24px; color:#ff4da6;
+                    text-shadow: 0 0 6px #ff4da6, 0 0 12px #ff66cc;">
           ♥
         </div>
       `;
@@ -245,7 +248,6 @@ function typeWriter() {
     }
   }, 35);
 }
-
 
 /* Close */
 function closeLetter(e) {
